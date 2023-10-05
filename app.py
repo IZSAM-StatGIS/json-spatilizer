@@ -18,14 +18,13 @@ with col2:
 with col3:
     disease = st.number_input('ID Malattia:', min_value=0, step=1, value=16)
     
-URL = "http://plumber-test:8080/FocolaiMalattiaPeriodo?SOSPETTO_FROM={0}&SOSPETTO_TO={1}&ID_MALATTIA={2}".format(from_date, to_date, disease)
+URL = "http://plumber-test.izs.intra:8080/FocolaiMalattiaPeriodo?SOSPETTO_FROM={0}&SOSPETTO_TO={1}&ID_MALATTIA={2}".format(from_date, to_date, disease)
 
 st.write(URL)
 
 # QUERY AL SERVIZIO PLUMBER E CONVERSIONE IN GEOJSON
 response = requests.get(URL)
 jsonResponse = response.json()
-print("Entire JSON response")
 
 geojs={
      "type": "FeatureCollection",
