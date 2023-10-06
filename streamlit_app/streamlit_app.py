@@ -18,12 +18,11 @@ with col2:
 with col3:
     disease = st.number_input('ID Malattia:', min_value=0, step=1, value=16)
 
+URL = "http://plumber-test.izs.intra:8080/FocolaiMalattiaPeriodo?SOSPETTO_FROM={0}&SOSPETTO_TO={1}&ID_MALATTIA={2}".format(from_date, to_date, disease)
+
 qs_expander = st.expander('Query')
-
 with qs_expander:
-    URL = "http://plumber-test.izs.intra:8080/FocolaiMalattiaPeriodo?SOSPETTO_FROM={0}&SOSPETTO_TO={1}&ID_MALATTIA={2}".format(from_date, to_date, disease)
-
-st.write(URL)
+    st.write(URL)
 
 # QUERY AL SERVIZIO PLUMBER E CONVERSIONE IN GEOJSON
 try: 
@@ -66,7 +65,7 @@ try:
     )
     
 except requests.exceptions.ConnectionError as connerr: 
-    st.error("Errore di connessione: il servizio è utilizzabile solo all'interno della rete IZSAM!") 
+    st.error("Errore di connessione: il servizio è disponibile solo all'interno della rete IZSAM!") 
     # st.write(errh.args[0]) 
  
 
