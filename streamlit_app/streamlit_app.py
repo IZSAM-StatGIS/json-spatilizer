@@ -23,36 +23,48 @@ URL = "http://plumber-test.izs.intra:8080/FocolaiMalattiaPeriodo?SOSPETTO_FROM={
 st.write(URL)
 
 # QUERY AL SERVIZIO PLUMBER E CONVERSIONE IN GEOJSON
-response = requests.get(URL)
-jsonResponse = response.json()
-
-geojs={
-     "type": "FeatureCollection",
-     "features":[
-           {
+try: 
+    response = requests.get(URL)
+    jsonResponse = response.json() 
+    
+    geojs={
+        "type": "FeatureCollection",
+        "features":[
+            {
                 "type":"Feature",
                 "geometry": {
                 "type":"Point",
                 "coordinates":[d["LONGITUDINE"],d["LATITUDINE"]]
             },
                 "properties":d,
-        
-         } for d in jsonResponse 
-    ]  
- }
+            } for d in jsonResponse 
+        ]  
+    }
+    
+    j_expander = st.expander("GeoJSON Response")
+    
+    with j_expander:
+        st.write(geojs)
 
-st.write(geojs)
+    # VISUALIZZAZIONE SU MAPPA DELLA CONVERSIONE
+    properties_list = [feature['properties'] for feature in geojs['features']]
+    df = pd.DataFrame(properties_list)
+    df.rename(columns={'LATITUDINE':'lat', 'LONGITUDINE':'lon'}, inplace=True)
+    
+    m_expander = st.expander("Map", expanded=True)
+    with m_expander:
+        st.map(df)
 
-# VISUALIZZAZIONE SU MAPPA DELLA CONVERSIONE
-properties_list = [feature['properties'] for feature in geojs['features']]
-df = pd.DataFrame(properties_list)
-df.rename(columns={'LATITUDINE':'lat', 'LONGITUDINE':'lon'}, inplace=True)
+    st.download_button(
+        label="Download GeoJSON",
+        data=json.dumps(geojs),
+        file_name='geodata.geojson',
+        mime='application/json',
+    )
+    
+except requests.exceptions.ConnectionError as connerr: 
+    st.error("Errore di connessione: il servizio di origine non è disponibile solo all'interno della rete IZSAM!") 
+    # st.write(errh.args[0]) 
+ 
 
-st.map(df)
 
-st.download_button(
-    label="Download GeoJSON",
-    data=json.dumps(geojs),
-    file_name='geodata.geojson',
-    mime='application/json',
-)
